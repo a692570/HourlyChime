@@ -49,16 +49,16 @@ We spend hours at our computers and time flies by without us noticing. HourlyChi
 
 1. **Download the App**
    - Go to [Releases](https://github.com/a692570/HourlyChime/releases/latest)
-   - Download `HourlyChime-v1.0.0-macOS.zip`
+   - Download `HourlyChime-v1.0.1-macOS-Signed.zip` (properly signed for macOS 15.4 Sequoia+)
 
 2. **Unzip the File**
    - Double-click the downloaded zip file
-   - macOS will automatically extract `HourlyChime-Release.app`
+   - macOS will automatically extract `HourlyChime.app`
 
 3. **Move to Applications** (Optional but Recommended)
    ```bash
    # Drag the app to Applications folder, or use Terminal:
-   mv ~/Downloads/HourlyChime-Release.app /Applications/
+   mv ~/Downloads/HourlyChime.app /Applications/
    ```
 
 4. **First Launch - Handle Security Warning**
@@ -66,26 +66,26 @@ We spend hours at our computers and time flies by without us noticing. HourlyChi
    When you first open the app, macOS Gatekeeper will block it because it's not from the App Store:
 
    **Option A: Using Finder (Easiest)**
-   - Right-click (or Control-click) on `HourlyChime-Release.app`
+   - Right-click (or Control-click) on `HourlyChime.app`
    - Select **"Open"** from the menu
    - Click **"Open"** in the security dialog
    - The app will launch and appear in your menu bar as 🔔
 
    **Option B: Using System Settings**
    - Try to open the app normally (double-click)
-   - macOS will show: "HourlyChime-Release.app cannot be opened"
+   - macOS will show: "HourlyChime.app cannot be opened"
    - Open **System Settings** → **Privacy & Security**
-   - Scroll down to find: "HourlyChime-Release.app was blocked..."
+   - Scroll down to find: "HourlyChime.app was blocked..."
    - Click **"Open Anyway"**
    - Click **"Open"** in the confirmation dialog
 
    **Option C: Using Terminal**
    ```bash
    # Remove quarantine attribute
-   xattr -d com.apple.quarantine /Applications/HourlyChime-Release.app
+   xattr -d com.apple.quarantine /Applications/HourlyChime.app
 
    # Then open normally
-   open /Applications/HourlyChime-Release.app
+   open /Applications/HourlyChime.app
    ```
 
 5. **Allow Notifications** (Optional)
@@ -106,7 +106,7 @@ We spend hours at our computers and time flies by without us noticing. HourlyChi
    Or manually:
    - Go to **System Settings** → **General** → **Login Items**
    - Click the **+** button
-   - Select HourlyChime-Release.app
+   - Select HourlyChime.app
    - Click **"Add"**
 
 7. **Configure Settings**
@@ -239,12 +239,12 @@ Single-file architecture (~660 lines) for simplicity and maintainability.
 
 ### macOS Security Warning
 
-**Problem:** "HourlyChime-Release.app cannot be opened because it is from an unidentified developer"
+**Problem:** "HourlyChime.app cannot be opened because it is from an unidentified developer"
 
 **Solution:**
 - Right-click the app → **Open** → Click **Open** in dialog
 - Or: System Settings → Privacy & Security → Click **"Open Anyway"**
-- Or: Remove quarantine: `xattr -d com.apple.quarantine /Applications/HourlyChime-Release.app`
+- Or: Remove quarantine: `xattr -d com.apple.quarantine /Applications/HourlyChime.app`
 
 ### App doesn't appear in menu bar
 
@@ -252,7 +252,7 @@ Single-file architecture (~660 lines) for simplicity and maintainability.
 
 **Solution:**
 - Check if it's hidden in menu bar overflow (>>)
-- Restart the app: `killall HourlyChime-Release && open /Applications/HourlyChime-Release.app`
+- Restart the app: `killall HourlyChime-Release && open /Applications/HourlyChime.app`
 - Check Activity Monitor to see if app is running
 - Make sure you're on macOS 13.0 or later
 
@@ -329,7 +329,7 @@ To completely remove HourlyChime:
 killall HourlyChime-Release
 
 # Remove app
-rm -rf /Applications/HourlyChime-Release.app
+rm -rf /Applications/HourlyChime.app
 
 # Remove preferences
 rm ~/Library/Preferences/com.abhishek.hourlychime.plist
