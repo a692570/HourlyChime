@@ -1,0 +1,30 @@
+# Swift Build
+.build/
+*.xcodeproj
+*.xcworkspace
+
+# macOS
+.DS_Store
+*.swp
+*.swo
+*~
+
+# App Bundle
+*.app
+
+# User Settings
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# Xcode
+DerivedData/
+*.hmap
+*.ipa
+
+# Crash Logs
+*.crash
+*.ips
