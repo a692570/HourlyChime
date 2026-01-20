@@ -14,6 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var settingsWindow: NSWindow!
     var chimeTimer: Timer?
+    var menuUpdateTimer: Timer?
     var muteUntil: Date?
 
     // Pomodoro
@@ -34,6 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupMenu()
         loadSettings()
         startChimeTimer()
+        startMenuUpdateTimer()
 
         // Keep app running
         NSApp.setActivationPolicy(.accessory)
@@ -418,6 +420,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Also check immediately
         checkAndPlayChime()
+    }
+
+    func startMenuUpdateTimer() {
+        // Update menu every 60 seconds to keep display fresh
+        menuUpdateTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            self?.setupMenu()
+        }
     }
 
     var lastPlayedMinute: Int = -1
