@@ -6,6 +6,15 @@ A minimalist macOS menu bar app that chimes on the hour to help you stay aware o
 ![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+Current release: `v1.0.2`
+
+## What's New in v1.0.2
+- Split the app into smaller files for menu logic, scheduling, settings, sound, and notifications
+- Fixed chime suppression across day boundaries
+- Replaced AppleScript notifications with `UNUserNotificationCenter`
+- Added a small checks target for schedule behavior
+- Cleaned up Pomodoro state handling and settings editing
+
 ## Features
 
 ### 🔔 Hourly Chime
@@ -49,7 +58,7 @@ We spend hours at our computers and time flies by without us noticing. HourlyChi
 
 1. **Download the App**
    - Go to [Releases](https://github.com/a692570/HourlyChime/releases/latest)
-   - Download `HourlyChime-v1.0.1-macOS-Signed.zip` (properly signed for macOS 15.4 Sequoia+)
+   - Download `HourlyChime-v1.0.2-macOS.zip`
 
 2. **Unzip the File**
    - Double-click the downloaded zip file
@@ -135,6 +144,9 @@ cd HourlyChime
 # Build the app
 swift build -c release
 
+# Run the checks target
+swift run -c release HourlyChimeChecks
+
 # The executable is at:
 # .build/release/HourlyChime
 
@@ -206,10 +218,22 @@ These are pleasant, non-intrusive sounds that won't disrupt your flow.
 
 ```
 HourlyChime/
-├── Package.swift           # Swift Package Manager config
+├── Package.swift                # Swift Package Manager config
 ├── Sources/
-│   └── main.swift         # All app code (single file)
-└── HourlyChime.app/       # Built application bundle
+│   ├── HourlyChime/main.swift   # App entry point
+│   ├── AppDelegate.swift        # App lifecycle and timers
+│   ├── AppMenuBuilder.swift     # Menu bar construction
+│   ├── ChimeSchedule.swift      # Chime timing logic
+│   ├── ChimeSettings.swift      # Stored preferences
+│   ├── NotificationManager.swift
+│   ├── PomodoroSessionManager.swift
+│   ├── SettingsView.swift
+│   ├── SettingsViewModel.swift
+│   ├── SettingsWindowController.swift
+│   ├── SoundPlayer.swift
+│   └── Formatters.swift
+└── Tests/
+    └── HourlyChimeChecks/main.swift
 ```
 
 ### Building
@@ -220,6 +244,9 @@ swift build
 
 # Release build
 swift build -c release
+
+# Run schedule checks
+swift run -c release HourlyChimeChecks
 
 # Run directly
 swift run
@@ -232,8 +259,9 @@ Built with:
 - **AppKit** for menu bar integration
 - **AVFoundation** for sound playback
 - **ServiceManagement** for launch at login
+- **UserNotifications** for alerts
 
-Single-file architecture (~660 lines) for simplicity and maintainability.
+The app is split into focused files instead of one large source file.
 
 ## Troubleshooting
 
@@ -252,7 +280,7 @@ Single-file architecture (~660 lines) for simplicity and maintainability.
 
 **Solution:**
 - Check if it's hidden in menu bar overflow (>>)
-- Restart the app: `killall HourlyChime-Release && open /Applications/HourlyChime.app`
+- Restart the app: `killall HourlyChime && open /Applications/HourlyChime.app`
 - Check Activity Monitor to see if app is running
 - Make sure you're on macOS 13.0 or later
 
@@ -261,7 +289,7 @@ Single-file architecture (~660 lines) for simplicity and maintainability.
 **Problem:** Pomodoro notifications don't appear
 
 **Solution:**
-- System Settings → Notifications → Find **HourlyChime** or **osascript**
+- System Settings → Notifications → Find **HourlyChime**
 - Enable "Allow Notifications"
 - Choose notification style: Alerts or Banners
 - Make sure "Do Not Disturb" is off
@@ -317,7 +345,6 @@ Single-file architecture (~660 lines) for simplicity and maintainability.
 
 **Solution:**
 - System Settings → Privacy & Security → Notifications → Enable for HourlyChime
-- If using AppleScript notifications, enable for **osascript** too
 - Reset permissions: Delete app and reinstall
 
 ### Uninstalling
@@ -326,7 +353,7 @@ To completely remove HourlyChime:
 
 ```bash
 # Quit the app
-killall HourlyChime-Release
+killall HourlyChime
 
 # Remove app
 rm -rf /Applications/HourlyChime.app
