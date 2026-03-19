@@ -1,230 +1,89 @@
-# HourlyChime ⏰
+# HourlyChime
 
-A minimalist macOS menu bar app that chimes on the hour to help you stay aware of time passing during your workday.
+A macOS menu bar app that chimes on the hour. Also has a built-in Pomodoro timer.
 
-![Menu Bar](https://img.shields.io/badge/macOS-13.0+-blue.svg)
-![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+You look up and it is 4pm. This app prevents that.
+
+![macOS 13.0+](https://img.shields.io/badge/macOS-13.0+-blue.svg)
+![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg)
+![MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
 Current release: `v1.0.2`
 
-## What's New in v1.0.2
+## What it does
+
+**Hourly chime:** Plays a short sound at regular intervals during your work hours. Configurable frequency: 15 min, 30 min, 1 hour, or 2 hours. Configurable work hours and days. Shows next chime time and hours remaining in your day.
+
+**Pomodoro timer:** 25-min work sessions, 5-min short breaks, 15-min long break after 4 sessions. Live countdown in the menu bar. Skip breaks when you are in the zone.
+
+**Menu bar only.** No dock icon, no window. Click the bell to see controls, start a Pomodoro, mute for an hour, or open settings.
+
+## What is new in v1.0.2
+
 - Split the app into smaller files for menu logic, scheduling, settings, sound, and notifications
 - Fixed chime suppression across day boundaries
 - Replaced AppleScript notifications with `UNUserNotificationCenter`
 - Added a small checks target for schedule behavior
 - Cleaned up Pomodoro state handling and settings editing
 
-## Features
+## Install
 
-### 🔔 Hourly Chime
-- Plays a pleasant chime sound at configurable intervals
-- Customizable frequency: 15 minutes, 30 minutes, 1 hour, or 2 hours
-- Set your work hours (default: 9 AM - 6 PM)
-- Choose which days of the week to enable
-- Mute for 1 hour when you need silence
-- Shows next chime time and hours remaining in your workday
+Download from [Releases](https://github.com/a692570/HourlyChime/releases/latest), unzip, drag to Applications.
 
-### 🍅 Built-in Pomodoro Timer
-- Work sessions: 25 minutes
-- Short breaks: 5 minutes
-- Long breaks: 15 minutes (after 4 work sessions)
-- Live countdown in menu bar
-- Notifications when sessions start/end
-- Skip breaks when you're in the flow
+On first launch, macOS may block it because it is not from the App Store. Right-click the app, select "Open", then click "Open" in the dialog. One-time thing.
 
-### ⚙️ Additional Features
-- Launch at login support
-- Lives quietly in your menu bar
-- Test sound before committing
-- Simple, distraction-free interface
-
-## Why?
-
-We spend hours at our computers and time flies by without us noticing. HourlyChime is a gentle reminder that time is passing, helping you:
-- Take regular breaks
-- Stay aware of how long you've been working
-- Maintain better work-life boundaries
-- Use the Pomodoro Technique for focused work
-
-## Installation
-
-### Easy Install (Recommended)
-
-**Requirements:**
-- macOS 13.0 (Ventura) or later
-
-**Step-by-Step Installation:**
-
-1. **Download the App**
-   - Go to [Releases](https://github.com/a692570/HourlyChime/releases/latest)
-   - Download `HourlyChime-v1.0.2-macOS.zip`
-
-2. **Unzip the File**
-   - Double-click the downloaded zip file
-   - macOS will automatically extract `HourlyChime.app`
-
-3. **Move to Applications** (Optional but Recommended)
-   ```bash
-   # Drag the app to Applications folder, or use Terminal:
-   mv ~/Downloads/HourlyChime.app /Applications/
-   ```
-
-4. **First Launch - Handle Security Warning**
-
-   When you first open the app, macOS Gatekeeper will block it because it's not from the App Store:
-
-   **Option A: Using Finder (Easiest)**
-   - Right-click (or Control-click) on `HourlyChime.app`
-   - Select **"Open"** from the menu
-   - Click **"Open"** in the security dialog
-   - The app will launch and appear in your menu bar as 🔔
-
-   **Option B: Using System Settings**
-   - Try to open the app normally (double-click)
-   - macOS will show: "HourlyChime.app cannot be opened"
-   - Open **System Settings** → **Privacy & Security**
-   - Scroll down to find: "HourlyChime.app was blocked..."
-   - Click **"Open Anyway"**
-   - Click **"Open"** in the confirmation dialog
-
-   **Option C: Using Terminal**
-   ```bash
-   # Remove quarantine attribute
-   xattr -d com.apple.quarantine /Applications/HourlyChime.app
-
-   # Then open normally
-   open /Applications/HourlyChime.app
-   ```
-
-5. **Allow Notifications** (Optional)
-
-   For Pomodoro timer notifications to work:
-   - Go to **System Settings** → **Notifications**
-   - Find **HourlyChime** or **Terminal** in the list
-   - Enable notifications
-   - Choose your preferred notification style (Alerts or Banners)
-
-6. **Setup Launch at Login** (Optional)
-
-   To have HourlyChime start automatically when you log in:
-   - Click the 🔔 icon in your menu bar
-   - Select **"Launch at Login"**
-   - A checkmark ✓ will appear when enabled
-
-   Or manually:
-   - Go to **System Settings** → **General** → **Login Items**
-   - Click the **+** button
-   - Select HourlyChime.app
-   - Click **"Add"**
-
-7. **Configure Settings**
-   - Click the 🔔 icon in menu bar
-   - Select **"Settings..."** or press `⌘,`
-   - Set your preferred:
-     - Work days (M-F or all 7 days)
-     - Work hours (default 9 AM - 6 PM)
-     - Chime frequency (15m/30m/1h/2h)
-
-**You're all set!** The app will now chime at your configured intervals. 🎉
-
-### From Source
-
-**Requirements:**
-- macOS 13.0 or later
-- Xcode Command Line Tools or Xcode
-
-**Build Steps:**
+### Build from source
 
 ```bash
-# Clone the repository
 git clone https://github.com/a692570/HourlyChime.git
 cd HourlyChime
-
-# Build the app
 swift build -c release
-
-# Run the checks target
 swift run -c release HourlyChimeChecks
-
-# The executable is at:
-# .build/release/HourlyChime
-
-# Run directly
 .build/release/HourlyChime
 ```
 
-## Usage
+## Keyboard shortcuts
 
-### Basic Setup
+| Key | Action |
+|-----|--------|
+| `⌘,` | Settings |
+| `⌘P` | Start Pomodoro |
+| `⌘M` | Mute for 1 hour |
+| `⌘T` | Test sound |
+| `⌘Q` | Quit |
 
-1. **Launch the app** - A 🔔 icon appears in your menu bar
-2. **Click the icon** to see the menu
-3. **Open Settings** (⌘,) to configure:
-   - Which days to enable (M-F for work days, or 7 days)
-   - Work hours (when to play chimes)
-   - Frequency (how often to chime)
+## Settings
 
-### Hourly Chime
+Click the bell icon, then "Settings..." or press `⌘,`.
 
-The app will automatically play a chime sound at your configured interval during your set work hours. The menu shows:
-- Next chime time
-- Hours remaining until end of day
-- Enable/disable toggle
-- Mute for 1 hour option
+- **Days:** Pick which days to enable
+- **Hours:** When to start and stop chiming
+- **Frequency:** How often, 15m / 30m / 1h / 2h
+- **Launch at Login:** Toggle from the menu
 
-### Pomodoro Timer
+Preferences are stored at `~/Library/Preferences/com.abhishek.hourlychime.plist`.
 
-1. Click the menu bar icon
-2. Select **Start Work (25 min)** (⌘P)
-3. The icon changes to 🍅 with countdown timer
-4. After work session, take a break ☕
-5. Repeat until 4 sessions complete, then take a long break
+## How it is built
 
-You can:
-- Stop the timer anytime
-- Skip breaks when focused
-- See session count (X/4)
+- **SwiftUI** for the settings window
+- **AppKit** for menu bar integration
+- **AVFoundation** for sound playback
+- **ServiceManagement** for launch at login
+- **UserNotifications** for alerts
 
-### Keyboard Shortcuts
+The app is split into focused files instead of one large source file.
 
-- `⌘,` - Open Settings
-- `⌘T` - Test Sound
-- `⌘M` - Mute for 1 hour
-- `⌘P` - Start Pomodoro
-- `⌘Q` - Quit
+Project layout:
 
-## Configuration
-
-Settings are stored in `~/Library/Preferences/com.abhishek.hourlychime.plist`
-
-Default configuration:
-- **Days:** Monday - Sunday (all enabled)
-- **Hours:** 9 AM - 6 PM
-- **Frequency:** Every 1 hour
-- **Sound:** macOS "Hero" sound
-
-## Sounds
-
-The app uses macOS built-in sounds:
-- **Hourly Chime:** Hero.aiff
-- **Pomodoro:** Ping.aiff
-
-These are pleasant, non-intrusive sounds that won't disrupt your flow.
-
-## Development
-
-### Project Structure
-
-```
+```text
 HourlyChime/
-├── Package.swift                # Swift Package Manager config
+├── Package.swift
 ├── Sources/
-│   ├── HourlyChime/main.swift   # App entry point
-│   ├── AppDelegate.swift        # App lifecycle and timers
-│   ├── AppMenuBuilder.swift     # Menu bar construction
-│   ├── ChimeSchedule.swift      # Chime timing logic
-│   ├── ChimeSettings.swift      # Stored preferences
+│   ├── HourlyChime/main.swift
+│   ├── AppDelegate.swift
+│   ├── AppMenuBuilder.swift
+│   ├── ChimeSchedule.swift
+│   ├── ChimeSettings.swift
 │   ├── NotificationManager.swift
 │   ├── PomodoroSessionManager.swift
 │   ├── SettingsView.swift
@@ -236,164 +95,26 @@ HourlyChime/
     └── HourlyChimeChecks/main.swift
 ```
 
-### Building
-
-```bash
-# Debug build
-swift build
-
-# Release build
-swift build -c release
-
-# Run schedule checks
-swift run -c release HourlyChimeChecks
-
-# Run directly
-swift run
-```
-
-### Architecture
-
-Built with:
-- **SwiftUI** for Settings window
-- **AppKit** for menu bar integration
-- **AVFoundation** for sound playback
-- **ServiceManagement** for launch at login
-- **UserNotifications** for alerts
-
-The app is split into focused files instead of one large source file.
-
 ## Troubleshooting
 
-### macOS Security Warning
+**No menu bar icon:** Check the overflow area. Make sure you are on macOS 13.0+.
 
-**Problem:** "HourlyChime.app cannot be opened because it is from an unidentified developer"
+**No sound:** Check system volume. Try "Test Sound" from the menu. Verify you are within work hours.
 
-**Solution:**
-- Right-click the app → **Open** → Click **Open** in dialog
-- Or: System Settings → Privacy & Security → Click **"Open Anyway"**
-- Or: Remove quarantine: `xattr -d com.apple.quarantine /Applications/HourlyChime.app`
+**Notifications missing:** System Settings > Notifications > enable for HourlyChime.
 
-### App doesn't appear in menu bar
-
-**Problem:** App launched but no 🔔 icon visible
-
-**Solution:**
-- Check if it's hidden in menu bar overflow (>>)
-- Restart the app: `killall HourlyChime && open /Applications/HourlyChime.app`
-- Check Activity Monitor to see if app is running
-- Make sure you're on macOS 13.0 or later
-
-### Notifications not showing
-
-**Problem:** Pomodoro notifications don't appear
-
-**Solution:**
-- System Settings → Notifications → Find **HourlyChime**
-- Enable "Allow Notifications"
-- Choose notification style: Alerts or Banners
-- Make sure "Do Not Disturb" is off
-
-### Sound doesn't play
-
-**Problem:** No chime sound when expected
-
-**Solution:**
-- Check system volume (not muted)
-- Click menu icon → **"Test Sound"** to verify
-- Verify sounds exist: `ls /System/Library/Sounds/Hero.aiff`
-- Check if app is muted (shows "Muted until..." in menu)
-- Ensure you're within configured work hours
-
-### Chimes not playing at expected times
-
-**Problem:** App is running but not chiming
-
-**Solution:**
-- Click menu icon → Check "Next: ..." shows expected time
-- Verify in Settings (⌘,):
-  - Today's day is checked (M-F or 7 days)
-  - Current hour is within work hours (default 9 AM - 6 PM)
-  - Frequency is set correctly (15m/30m/1h/2h)
-- Check if chime is enabled (menu shows "✓ Enabled")
-- Look for 🔔 icon in menu bar (if missing, app isn't running)
-
-### Launch at login not working
-
-**Problem:** App doesn't start when you log in
-
-**Solution:**
-- Click menu icon → Ensure "✓ Launch at Login" is checked
-- Or manually: System Settings → General → Login Items → Add HourlyChime
-- Try disabling and re-enabling "Launch at Login" in app menu
-- Check Login Items permissions in System Settings
-
-### App crashes on launch
-
-**Problem:** App quits immediately after opening
-
-**Solution:**
-- Check Console.app for crash logs (search "HourlyChime")
-- Ensure you're on macOS 13.0+: `sw_vers`
-- Remove preferences: `rm ~/Library/Preferences/com.abhishek.hourlychime.plist`
-- Rebuild from source: `cd HourlyChime && swift build -c release`
-- Report issue on GitHub with crash log
-
-### Permissions Issues
-
-**Problem:** App needs permissions but dialog doesn't appear
-
-**Solution:**
-- System Settings → Privacy & Security → Notifications → Enable for HourlyChime
-- Reset permissions: Delete app and reinstall
-
-### Uninstalling
-
-To completely remove HourlyChime:
+**Uninstalling:**
 
 ```bash
-# Quit the app
 killall HourlyChime
-
-# Remove app
 rm -rf /Applications/HourlyChime.app
-
-# Remove preferences
 rm ~/Library/Preferences/com.abhishek.hourlychime.plist
-
-# Remove from Login Items
-# System Settings → General → Login Items → Remove HourlyChime
 ```
-
-### Still having issues?
-
-- Check [existing issues](https://github.com/a692570/HourlyChime/issues)
-- Create a [new issue](https://github.com/a692570/HourlyChime/issues/new) with:
-  - macOS version: `sw_vers`
-  - Steps to reproduce
-  - Console.app logs if available
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT
 
 ## Author
 
-**Abhishek Sharma** ([@a692570](https://github.com/a692570))
-
-## Acknowledgments
-
-- Inspired by the need for better time awareness during deep work
-- Built with Apple's excellent Swift and AppKit frameworks
-- Pomodoro Technique by Francesco Cirillo
-
----
-
-**Built with ❤️ for focused, mindful work.**
+Abhishek Sharma ([@a692570](https://github.com/a692570))
