@@ -16,6 +16,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     // Feature: end-of-day signal
     private let endOfDayManager = EndOfDayManager()
 
+    // Feature: bedtime nudge at 12:20 AM
+    private let bedtimeNudgeManager = BedtimeNudgeManager()
+
     // Feature: daily stats tracking
     private let dailyStats = DailyStatsTracker()
 
@@ -61,6 +64,13 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         focusMonitor.startObserving()
 
+        // Feature: bedtime nudge
+        bedtimeNudgeManager.onNudge = { [weak self] in
+            SoundPlayer.playBedtime()
+            self?.notificationManager.showBedtime()
+        }
+        bedtimeNudgeManager.start()
+
         NSApp.setActivationPolicy(.accessory)
     }
 
@@ -68,6 +78,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         // Feature: daily stats — show summary when user quits
         fireDailyStatsSummaryIfNeeded(now: Date())
 
+        bedtimeNudgeManager.stop()
         chimeTimer?.cancel()
         chimeTimer = nil
         menuUpdateTimer?.invalidate()

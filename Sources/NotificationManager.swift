@@ -34,6 +34,14 @@ public final class NotificationManager {
         post(content, identifier: "end-of-day-\(Date().timeIntervalSince1970)")
     }
 
+    func showBedtime() {
+        let content = UNMutableNotificationContent()
+        content.title = "Time to sleep 🌙"
+        content.body = "It's 12:20 AM. Close the laptop."
+        content.sound = .default
+        post(content, identifier: "bedtime-nudge-\(Date().timeIntervalSince1970)")
+    }
+
     func showDailyStats(summary: String) {
         let content = UNMutableNotificationContent()
         content.title = "Today's Summary"

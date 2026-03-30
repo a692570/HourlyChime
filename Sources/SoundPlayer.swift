@@ -1,3 +1,4 @@
+import AppKit
 import AVFoundation
 import Foundation
 
@@ -43,6 +44,17 @@ enum SoundPlayer {
 
     static func playEndOfDay() {
         AudioServicesPlaySystemSound(cachedSoundID(named: "Glass", storage: &endOfDaySoundID))
+    }
+
+    static func playBedtime() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            for i in 0..<3 {
+                NSSound(named: "Basso")?.play()
+                if i < 2 {
+                    Thread.sleep(forTimeInterval: 0.3)
+                }
+            }
+        }
     }
 
     private static func cachedSoundID(named name: String, storage: inout SystemSoundID) -> SystemSoundID {
