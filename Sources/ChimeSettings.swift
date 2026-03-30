@@ -7,6 +7,7 @@ public final class ChimeSettings: ObservableObject {
     @Published public var startHour = 9
     @Published public var endHour = 18
     @Published public var frequencyMinutes = 60
+    @Published public var muteWhenFocused = false
 
     private let defaults = UserDefaults.standard
 
@@ -18,6 +19,7 @@ public final class ChimeSettings: ObservableObject {
         defaults.set(startHour, forKey: Keys.startHour)
         defaults.set(endHour, forKey: Keys.endHour)
         defaults.set(frequencyMinutes, forKey: Keys.frequencyMinutes)
+        defaults.set(muteWhenFocused, forKey: Keys.muteWhenFocused)
     }
 
     public func load() {
@@ -30,6 +32,7 @@ public final class ChimeSettings: ObservableObject {
         startHour = defaults.object(forKey: Keys.startHour) as? Int ?? 9
         endHour = defaults.object(forKey: Keys.endHour) as? Int ?? 18
         frequencyMinutes = defaults.object(forKey: Keys.frequencyMinutes) as? Int ?? 60
+        muteWhenFocused = defaults.object(forKey: Keys.muteWhenFocused) as? Bool ?? false
     }
 }
 
@@ -39,4 +42,5 @@ private enum Keys {
     static let startHour = "startHour"
     static let endHour = "endHour"
     static let frequencyMinutes = "frequencyMinutes"
+    static let muteWhenFocused = "muteWhenFocused"
 }

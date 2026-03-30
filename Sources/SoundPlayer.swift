@@ -5,10 +5,12 @@ enum SoundPlayer {
     private static let lock = NSLock()
     private static var chimeSoundID: SystemSoundID = 0
     private static var pomodoroSoundID: SystemSoundID = 0
+    private static var endOfDaySoundID: SystemSoundID = 0
 
     static func prepare() {
         _ = cachedSoundID(named: "Hero", storage: &chimeSoundID)
         _ = cachedSoundID(named: "Ping", storage: &pomodoroSoundID)
+        _ = cachedSoundID(named: "Glass", storage: &endOfDaySoundID)
     }
 
     static func cleanup() {
@@ -24,6 +26,11 @@ enum SoundPlayer {
             AudioServicesDisposeSystemSoundID(pomodoroSoundID)
             pomodoroSoundID = 0
         }
+
+        if endOfDaySoundID != 0 {
+            AudioServicesDisposeSystemSoundID(endOfDaySoundID)
+            endOfDaySoundID = 0
+        }
     }
 
     static func playChime() {
@@ -32,6 +39,10 @@ enum SoundPlayer {
 
     static func playPomodoro() {
         AudioServicesPlaySystemSound(cachedSoundID(named: "Ping", storage: &pomodoroSoundID))
+    }
+
+    static func playEndOfDay() {
+        AudioServicesPlaySystemSound(cachedSoundID(named: "Glass", storage: &endOfDaySoundID))
     }
 
     private static func cachedSoundID(named name: String, storage: inout SystemSoundID) -> SystemSoundID {

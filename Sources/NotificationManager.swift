@@ -26,6 +26,22 @@ public final class NotificationManager {
         post(content, identifier: "pomodoro-\(Date().timeIntervalSince1970)")
     }
 
+    func showEndOfDay() {
+        let content = UNMutableNotificationContent()
+        content.title = "Work day complete"
+        content.body = "Time to wrap up. Great work today!"
+        content.sound = .default
+        post(content, identifier: "end-of-day-\(Date().timeIntervalSince1970)")
+    }
+
+    func showDailyStats(summary: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Today's Summary"
+        content.body = "Today: \(summary)"
+        content.sound = .default
+        post(content, identifier: "daily-stats-\(Date().timeIntervalSince1970)")
+    }
+
     private func post(_ content: UNNotificationContent, identifier: String) {
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
         center.add(request)

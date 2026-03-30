@@ -7,7 +7,8 @@ enum AppMenuBuilder {
         settings: ChimeSettings,
         muteUntil: Date?,
         pomodoroSession: PomodoroSessionManager,
-        launchAtLoginEnabled: Bool
+        launchAtLoginEnabled: Bool,
+        dailyStats: DailyStatsTracker? = nil
     ) -> NSMenu {
         let menu = NSMenu()
 
@@ -24,6 +25,10 @@ enum AppMenuBuilder {
             menu.addItem(NSMenuItem(title: "Mute for 1 hour", action: #selector(AppDelegate.muteForHour), keyEquivalent: "m"))
         }
 
+        let focusItem = NSMenuItem(title: "Mute when focused", action: #selector(AppDelegate.toggleMuteWhenFocused), keyEquivalent: "")
+        focusItem.state = settings.muteWhenFocused ? .on : .off
+        menu.addItem(focusItem)
+
         menu.addItem(.separator())
         menu.addItem(disabledItem(title: "🍅 Pomodoro"))
 
@@ -39,6 +44,12 @@ enum AppMenuBuilder {
         }
 
         menu.addItem(disabledItem(title: "Sessions: \(pomodoroSession.completedWorkSessions)/\(PomodoroSessionManager.sessionsPerCycle)"))
+
+        if let stats = dailyStats {
+            let pomodoros = stats.pomodoroCount(for: now)
+            menu.addItem(disabledItem(title: "Today: \(pomodoros) 🍅 completed"))
+        }
+
         menu.addItem(.separator())
 
         menu.addItem(NSMenuItem(title: "Settings...", action: #selector(AppDelegate.openSettings), keyEquivalent: ","))

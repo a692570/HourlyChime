@@ -13,6 +13,17 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pomodoroTimer: Timer?
     private let settingsWindowController: SettingsWindowController
 
+    // Feature: end-of-day signal
+    private let endOfDayManager = EndOfDayManager()
+
+    // Feature: daily stats tracking
+    private let dailyStats = DailyStatsTracker()
+
+    // Feature: Focus mode auto-mute
+    private let focusMonitor = FocusStateMonitor()
+    // Cached pomodoro count for menu bar title (persisted across ticks)
+    private var totalDailyPomodoros: Int = 0
+
     public init(settings: ChimeSettings = ChimeSettings(), notificationManager: NotificationManager = NotificationManager()) {
         self.settings = settings
         self.notificationManager = notificationManager
@@ -29,6 +40,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.toolTip = "Hourly Chime"
 
         settings.load()
+
+        // Seed today's pomodoro count from persistent storage
+        totalDailyPomodoros = dailyStats.pomodoroCount(for: Date())
+
         rebuildMenu()
         startChimeTimer()
         startMenuUpdateTimer()
@@ -40,16 +55,26 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
 
+        // Feature: Focus mode — start observing distributed notifications
+        focusMonitor.onFocusStateChanged = { [weak self] in
+            self?.rebuildMenu()
+        }
+        focusMonitor.startObserving()
+
         NSApp.setActivationPolicy(.accessory)
     }
 
     public func applicationWillTerminate(_ notification: Notification) {
+        // Feature: daily stats — show summary when user quits
+        fireDailyStatsSummaryIfNeeded(now: Date())
+
         chimeTimer?.cancel()
         chimeTimer = nil
         menuUpdateTimer?.invalidate()
         menuUpdateTimer = nil
         pomodoroTimer?.invalidate()
         pomodoroTimer = nil
+        focusMonitor.stopObserving()
         NSWorkspace.shared.notificationCenter.removeObserver(self)
         SoundPlayer.cleanup()
     }
@@ -61,7 +86,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             settings: settings,
             muteUntil: muteUntil,
             pomodoroSession: pomodoroSession,
-            launchAtLoginEnabled: isLaunchAtLoginEnabled()
+            launchAtLoginEnabled: isLaunchAtLoginEnabled(),
+            dailyStats: dailyStats
         )
     }
 
@@ -119,8 +145,14 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch transition {
         case .startedShortBreak:
+            // A work session just finished — record it in daily stats
+            dailyStats.incrementPomodoro(for: Date())
+            totalDailyPomodoros = dailyStats.pomodoroCount(for: Date())
             notificationManager.showPomodoro(message: "Work done. Take a short break.")
         case .startedLongBreak:
+            // A work session just finished — record it in daily stats
+            dailyStats.incrementPomodoro(for: Date())
+            totalDailyPomodoros = dailyStats.pomodoroCount(for: Date())
             notificationManager.showPomodoro(message: "Work done. Take a long break.")
         case .startedWork:
             notificationManager.showPomodoro(message: "Break over. Time to focus.")
@@ -137,7 +169,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         if pomodoroSession.isActive {
             let mins = pomodoroSession.secondsLeft / 60
             let secs = pomodoroSession.secondsLeft % 60
-            button.title = String(format: "%@ %d:%02d", pomodoroSession.menuEmoji, mins, secs)
+            // Feature 2: show completed count alongside the timer when a session is active
+            let countSuffix = totalDailyPomodoros > 0 ? " (\(totalDailyPomodoros))" : ""
+            button.title = String(format: "%@ %d:%02d%@", pomodoroSession.menuEmoji, mins, secs, countSuffix)
+        } else if totalDailyPomodoros > 0 {
+            // Feature 2: show completed count in the bell title when idle but some pomodoros done today
+            button.title = "🔔 🍅\(totalDailyPomodoros)"
         } else {
             button.title = "🔔"
         }
@@ -163,6 +200,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func toggleChime() {
         settings.enabled.toggle()
+        settings.save()
+        rebuildMenu()
+    }
+
+    @objc func toggleMuteWhenFocused() {
+        settings.muteWhenFocused.toggle()
         settings.save()
         rebuildMenu()
     }
@@ -207,18 +250,52 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let now = Date()
 
         guard settings.enabled else { return }
-        if let muteUntil = muteUntil, muteUntil > now {
+
+        // Feature 3: Focus mode auto-mute — skip chime when focused and toggle is on
+        if settings.muteWhenFocused && focusMonitor.isFocusActive {
+            checkEndOfDay(now: now)
             return
         }
+
+        if let muteUntil = muteUntil, muteUntil > now {
+            checkEndOfDay(now: now)
+            return
+        }
+
+        // Feature 1 + 4: check end-of-day regardless of whether we chime
+        checkEndOfDay(now: now)
+
         guard ChimeSchedule.shouldChime(now: now, settings: settings) else { return }
 
         let key = ChimeSchedule.chimeKey(for: now)
         guard lastPlayedChimeKey != key else { return }
 
         lastPlayedChimeKey = key
+
+        // Feature 4: record work start on first chime of the day
+        dailyStats.recordWorkStartIfNeeded(now: now)
+
         SoundPlayer.playChime()
         notificationManager.showChime(hour: Calendar.current.component(.hour, from: now))
         rebuildMenu()
+    }
+
+    /// Feature 1: fire end-of-day sound + notification once per calendar day.
+    /// Also fires the daily stats summary (Feature 4).
+    private func checkEndOfDay(now: Date) {
+        guard endOfDayManager.shouldFireEndOfDay(now: now, settings: settings) else { return }
+        endOfDayManager.markFired(now: now)
+        SoundPlayer.playEndOfDay()
+        notificationManager.showEndOfDay()
+        fireDailyStatsSummaryIfNeeded(now: now)
+    }
+
+    /// Feature 4: fire the daily stats summary notification.
+    private func fireDailyStatsSummaryIfNeeded(now: Date) {
+        let summary = dailyStats.summaryString(now: now)
+        // Only show if there is something to report (worked at least a bit)
+        guard dailyStats.workedHours(now: now) > 0 || dailyStats.pomodoroCount(for: now) > 0 else { return }
+        notificationManager.showDailyStats(summary: summary)
     }
 
     @objc private func handleWake() {
